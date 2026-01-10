@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>English Guru AI - 2025 Pro</title>
+    <style>
+        :root { --p: #007bff; --s: #28a745; --d: #dc3545; }
+        body { font-family: sans-serif; text-align: center; background: #f0f2f5; margin: 0; padding: 0; }
+        .header { background: var(--p); color: white; padding: 15px; font-size: 20px; font-weight: bold; position: sticky; top: 0; z-index: 100; }
+        .page { display: none; padding: 20px; animation: fadeIn 0.3s; }
+        .active { display: block; }
+        .btn-class { background: white; color: var(--p); border: 2px solid var(--p); width: 42%; margin: 5px; padding: 15px; border-radius: 15px; font-weight: bold; }
+        .reading-area { text-align: left; background: white; padding: 20px; border-radius: 15px; border-left: 6px solid var(--s); min-height: 120px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+        .highlight { color: red; text-decoration: underline; font-weight: bold; }
+        .timer-circle { font-size: 24px; color: var(--d); font-weight: bold; margin: 15px; border: 3px solid var(--d); display: inline-block; padding: 10px 20px; border-radius: 50px; background: white; }
+        
+        /* असली गाना प्लेयर डिजाइन */
+        .music-player { background: #1db954; color: white; padding: 15px; border-radius: 15px; margin-top: 15px; display: none; box-shadow: 0 4px 15px rgba(0,0,0,0.2); }
+        .footer { position: fixed; bottom: 0; left: 0; width: 100%; background: white; padding: 15px 0; box-shadow: 0 -2px 10px rgba(0,0,0,0.1); }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+    </style>
+</head>
+<body onload="checkLogin()">
+
+    <div class="header">English Guru: Learn & 2025 Hits</div>
+
+    <div id="lobby-page" class="page active">
+        <h3 style="color:#333;">अपनी क्लास चुनें (1-8)</h3>
+        <div style="display: flex; flex-wrap: wrap; justify-content: center; margin-top:10px;">
+            <button class="btn-class" onclick="openClass(1)">Class 1</button>
+            <button class="btn-class" onclick="openClass(2)">Class 2</button>
+            <button class="btn-class" onclick="openClass(3)">Class 3</button>
+            <button class="btn-class" onclick="openClass(4)">Class 4</button>
+            <button class="btn-class" onclick="openClass(5)">Class 5</button>
+            <button class="btn-class" onclick="openClass(6)">Class 6</button>
+            <button class="btn-class" onclick="openClass(7)">Class 7</button>
+            <button class="btn-class" onclick="openClass(8)">Class 8</button>
+        </div>
+    </div>
+
+    <div id="reading-page" class="page">
+        <div class="timer-circle">⏳ <span id="time">50</span>s</div>
+        
+        <div class="reading-area">
+            <div id="content-box" style="font-size: 20px; line-height: 1.6;"></div>
+            <p id="hindi-trans" style="color:#555; font-style:italic; border-top:1px solid #eee; margin-top:15px; padding-top:10px;"></p>
+        </div>
+
+        <div id="music-section" class="music-player">
+            <p id="song-name" style="margin:0 0 10px 0; font-weight:bold;">🎵 Now Playing: 2025 Superhit</p>
+            <audio id="audio-ctrl" controls style="width:100%;">
+                <source src="" type="audio/mpeg">
+            </audio>
+        </div>
+        
+        <button id="next-btn" style="background:var(--s); color:white; padding:15px; width:90%; border-radius:50px; border:none; margin-top:20px; font-weight:bold; display:none;" onclick="nextPara()">Next Paragraph (Ad)</button>
+        <button style="background:#6c757d; color:white; padding:10px; width:50%; border-radius:50px; border:none; margin-top:15px; margin-bottom:120px;" onclick="location.reload()">Lobby</button>
+
+        <div class="footer">
+            <button style="background:#ffc107; color:black; width:90%; padding:15px; border-radius:50px; border:none; font-weight:bold;" onclick="startAI()">🔊 AI Voice & Red Highlight</button>
+        </div>
+    </div>
+
+    <script>
+        let paraIdx = 0; let activeCls = 1; let timer; let timeLeft = 50;
+
+        // 2024-2025 की असली गानों की लिस्ट
+        const songHits = [
+            {n: "Bollywood Hit 2025", u: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3"},
+            {n: "Romantic Melody 2024", u: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-8.mp3"},
+            {n: "Party Song 2025", u: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-4.mp3"}
+        ];
+
+        // क्लास वाइज असली कहानियाँ
+        const contentData = {
+            1: [{e: "My house is red, a little house.", h: "मेरा घर लाल है, एक छोटा सा घर।"}, {e: "I laugh and play all day.", h: "मैं पूरे दिन हंसता और खेलता हूं।"}],
+            2: [{e: "The wind said to the sun.", h: "हवा ने सूरज से कहा।"}, {e: "I am stronger than you.", h: "मैं तुमसे ज्यादा ताकतवर हूं।"}],
+            8: [{e: "I spotted it in a junk shop.", h: "मैंने इसे एक कबाड़ की दुकान में देखा।"}, {e: "The man said it was oak.", h: "आदमी ने कहा कि यह ओक की लकड़ी का था।"}]
+        };
+
+        function checkLogin() { document.getElementById('lobby-page').classList.add('active'); }
+
+        function openClass(n) {
+            activeCls = n; paraIdx = 0; 
+            if(!contentData[n]) { alert("Class " + n + " का डेटा अभी अपलोड हो रहा है!"); return; }
+            loadContent();
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+            document.getElementById('reading-page').classList.add('active');
+            runTimer();
+        }
+
+        function loadContent() {
+            const lesson = contentData[activeCls][paraIdx];
+            const box = document.getElementById('content-box');
+            box.innerHTML = '';
+            lesson.e.split(' ').forEach(w => box.innerHTML += `<span class="word">${w} </span>`);
+            document.getElementById('hindi-trans').innerText = lesson.h;
+            document.getElementById('next-btn').style.display = 'none';
+            document.getElementById('music-section').style.display = 'none';
+        }
+
+        function runTimer() {
+            timeLeft = 50; clearInterval(timer);
+            timer = setInterval(() => {
+                document.getElementById('time').innerText = timeLeft;
+                if(timeLeft <= 0) {
+                    clearInterval(timer);
+                    playNewSong();
+                    document.getElementById('next-btn').style.display = 'block';
+                }
+                timeLeft--;
+            }, 1000);
+        }
+
+        function playNewSong() {
+            const s = songHits[Math.floor(Math.random() * songHits.length)];
+            const player = document.getElementById('audio-ctrl');
+            document.getElementById('song-name').innerText = "🎵 Playing: " + s.n;
+            player.src = s.u;
+            document.getElementById('music-section').style.display = 'block';
+            player.play();
+        }
+
+        function nextPara() {
+            if(paraIdx < contentData[activeCls].length - 1) {
+                alert("Showing Ad... Wait.");
+                paraIdx++; loadContent(); runTimer();
+            } else {
+                alert("Chapter Over! Go to Lobby.");
+                location.reload();
+            }
+        }
+
+        function startAI() {
+            window.speechSynthesis.cancel();
+            const words = document.querySelectorAll('.word');
+            const utter = new SpeechSynthesisUtterance(contentData[activeCls][paraIdx].e);
+            utter.lang = 'en-US'; utter.rate = 0.8;
+            let i = 0;
+            utter.onboundary = (e) => {
+                if(e.name === 'word') {
+                    words.forEach(w => w.classList.remove('highlight'));
+                    if(words[i]) words[i].classList.add('highlight');
+                    i++;
+                }
+            };
+            window.speechSynthesis.speak(utter);
+        }
+    </script>
+</body>
+</html>
